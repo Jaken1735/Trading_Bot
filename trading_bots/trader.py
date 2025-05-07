@@ -2,7 +2,14 @@ from lumibot.brokers import Alpaca
 from lumibot.backtesting import YahooDataBacktesting
 from lumibot.traders import Trader
 from lumibot.strategies.strategy import Strategy
-from datetime import datetime
+from datetime import datetime, timedelta
+from alpaca_trade_api import REST
+import sys
+import os
+
+# Add the parent directory to sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from finbert_utils import calculate_sentiment
 
 API_KEY = ''
 SECRET_KEY = ''
@@ -14,8 +21,8 @@ credentials = {
     'PAPER': True
 }
 
-start_date = datetime(2020, 1, 1)
-end_date = datetime(2021, 1, 1)
+start_date = datetime(2024, 1, 1)
+end_date = datetime(2024, 12, 31)
 
 """
 - cash at risk is the percentage of the account that is at risk for each trade.
@@ -30,6 +37,7 @@ class BaselineStrategy(Strategy):
         self.sleep_time = '24H'
         self.last_trade = None
         self.cash_at_risk = cash_at_risk
+        self.api = REST(key_id=API_KEY, secret_key=SECRET_KEY, base_url=BASE_URL)
 
     def position_size(self):
         """
@@ -39,16 +47,51 @@ class BaselineStrategy(Strategy):
         price = self.get_last_price(self.symbol)
         quantity = round((self.cash_at_risk * cash) / price, 0)
         return cash, price, quantity
+
+    def get_dates(self):
+        """
+        Fetch the current date with respect to the backtesting start date
+        """
+        today = self.get_datetime()
+        three_days_prior = today - timedelta(days=3)
+        return today.strftime('%Y-%m-%d'), three_days_prior.strftime('%Y-%m-%d')
+
+    def get_sentiment(self):
+        """
+        Get the sentiment for the symbol
+        """
+        today, three_days_prior = self.get_dates()
+        news = self.api.get_news(symbol=self.symbol, start=three_days_prior, end=today)
+        news = [event.__dict__['_raw']['headline'] for event in news]
+        probability, sentiment = calculate_sentiment(news)
+        return probability, sentiment
     
     def on_trading_iteration(self):
         cash, price, quantity = self.position_size()
-        
+        probability, sentiment = self.get_sentiment()
+
+
         if price < cash:
-            if self.last_trade is None:
+            if sentiment == 'positive' and probability > 0.999:
+
+                if self.last_trade == 'sell':
+                    self.sell_all()
+
                 order = self.create_order(self.symbol, quantity, 'buy', 
                 type='bracket', take_profit_price=(price * 1.20), stop_loss_price=(price * 0.95))
                 self.submit_order(order)
-                self.last_trade = order
+                self.last_trade = 'buy'
+                self.log_message(f'First trade: {order}')
+            
+            if sentiment == 'negative' and probability > 0.999:
+
+                if self.last_trade == 'buy':
+                    self.sell_all()
+
+                order = self.create_order(self.symbol, quantity, 'sell', 
+                type='bracket', take_profit_price=(price * 0.8), stop_loss_price=(price * 1.05))
+                self.submit_order(order)
+                self.last_trade = 'sell'
                 self.log_message(f'First trade: {order}')
     
 
