@@ -71,11 +71,3 @@ The main strategy:
    - Buy when sentiment is strongly positive (> 99.9% confidence)
    - Sell when sentiment is strongly negative (> 99.9% confidence)
 4. Implements risk management through position sizing and stop-loss orders
-
-## License
-
-[Specify your license here]
-
-## Disclaimer
-
-This trading bot is for educational and research purposes only. Use at your own risk. Past performance does not guarantee future results.
