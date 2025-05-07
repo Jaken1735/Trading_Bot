@@ -1,0 +1,35 @@
+2025-05-07 18:56:41,503: root: INFO: BaselineStrategy : Executing the initialize lifecycle method
+2025-05-07 18:56:42,908: root: INFO: Current backtesting datetime 2020-01-02 08:30:00-05:00
+2025-05-07 18:56:42,908: root: INFO: BaselineStrategy : Executing the before_market_opens lifecycle method
+2025-05-07 18:56:42,908: root: INFO: Current backtesting datetime 2020-01-02 09:30:00-05:00
+2025-05-07 18:56:42,908: root: INFO: BaselineStrategy : Executing the before_starting_trading lifecycle method
+2025-05-07 18:56:42,908: root: INFO: [34mBaselineStrategy : Executing the on_trading_iteration lifecycle method at 2025-05-07 18:56:42[0m
+2025-05-07 18:56:42,908: root: WARNING: quote is not implemented for YahooData, but USD was passed as the quote
+2025-05-07 18:56:42,917: root: WARNING: quote is not implemented for YahooData, but USD was passed as the quote
+2025-05-07 18:56:42,917: root: ERROR: Strategy.create_order() got an unexpected keyword argument 'take_profit'
+2025-05-07 18:56:42,917: root: ERROR: Traceback (most recent call last):
+  File "C:\Users\jacob\anaconda3\envs\trading_bot\lib\site-packages\lumibot\strategies\strategy_executor.py", line 829, in run
+    self._run_trading_session()
+  File "C:\Users\jacob\anaconda3\envs\trading_bot\lib\site-packages\lumibot\strategies\strategy_executor.py", line 780, in _run_trading_session
+    self._on_trading_iteration()
+  File "C:\Users\jacob\anaconda3\envs\trading_bot\lib\site-packages\lumibot\strategies\strategy_executor.py", line 274, in func_output
+    result = func_input(self, *args, **kwargs)
+  File "C:\Users\jacob\anaconda3\envs\trading_bot\lib\site-packages\lumibot\strategies\strategy_executor.py", line 298, in func_output
+    result = func_input(self, *args, **kwargs)
+  File "C:\Users\jacob\anaconda3\envs\trading_bot\lib\site-packages\lumibot\strategies\strategy_executor.py", line 87, in func_output
+    return func_input(self, *args, **kwargs)
+  File "C:\Users\jacob\anaconda3\envs\trading_bot\lib\site-packages\lumibot\strategies\strategy_executor.py", line 378, in _on_trading_iteration
+    on_trading_iteration()
+  File "C:\Users\jacob\anaconda3\envs\trading_bot\lib\site-packages\lumibot\tools\decorators.py", line 62, in func_output
+    frame, result = call_function_get_frame(func_input, *args, **kwargs)
+  File "C:\Users\jacob\anaconda3\envs\trading_bot\lib\site-packages\lumibot\tools\decorators.py", line 30, in call_function_get_frame
+    result = func(*args, **kwargs)
+  File "C:\Users\jacob\Documents\Github\Trading_Bot\trading_bots\trader.py", line 48, in on_trading_iteration
+    order = self.create_order(self.symbol, quantity, 'buy',
+TypeError: Strategy.create_order() got an unexpected keyword argument 'take_profit'
+
+2025-05-07 18:56:42,917: root: INFO: BaselineStrategy : Executing the on_bot_crash event method
+2025-05-07 18:56:42,939: root: INFO: Backtesting finished
+2025-05-07 18:56:42,944: root: WARNING: Cannot plot returns because the strategy returns are missing
+2025-05-07 18:56:43,008: root: WARNING: Cannot create a tearsheet because the strategy returns are missing
+2025-05-07 18:56:43,008: backtest_stats: INFO: Backtest took 0:00:01.507493 for a speed of 0.000
